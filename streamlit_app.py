@@ -1,15 +1,14 @@
 import streamlit as st
 import numpy as np
-import pandas as pd
 from scipy.stats import norm
 import plotly.graph_objects as go
 
-# ─── Black-Scholes Computation ──────────────────────────────────────────────────
-@st.experimental_memo
+# ─── Black–Scholes Computation ──────────────────────────────────────────────────
+@st.cache_data
 def compute_option_matrices(S_range, σ_range, T, K, r):
     S, σ = np.meshgrid(S_range, σ_range)
     vt = σ * np.sqrt(T)
-    d1 = (np.log(S/K) + (r + 0.5 * σ**2)*T) / vt
+    d1 = (np.log(S / K) + (r + 0.5 * σ**2) * T) / vt
     d2 = d1 - vt
     df = np.exp(-r * T)
     call = S * norm.cdf(d1) - K * df * norm.cdf(d2)
@@ -37,7 +36,7 @@ def plotly_heatmap(z, x, y, title, colorscale="Viridis"):
 
 # ─── Streamlit UI ─────────────────────────────────────────────────────────────
 st.set_page_config(page_title="BS Model Heatmap", layout="wide")
-st.title("Interactive Black-Scholes Heatmaps")
+st.title("Interactive Black–Scholes Heatmaps")
 
 # Sidebar inputs
 with st.sidebar:
