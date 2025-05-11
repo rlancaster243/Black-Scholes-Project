@@ -17,57 +17,46 @@ class BlackScholes:
         self.volatility = volatility
         self.interest_rate = interest_rate
 
-    def run(
-        self,
-    ):
-        time_to_maturity = self.time_to_maturity
-        strike = self.strike
-        current_price = self.current_price
-        volatility = self.volatility
-        interest_rate = self.interest_rate
+    def run(self):
+        T = self.time_to_maturity
+        K = self.strike
+        S = self.current_price
+        σ = self.volatility
+        r = self.interest_rate
 
-        d1 = (
-            log(current_price / strike) +
-            (interest_rate + 0.5 * volatility ** 2) * time_to_maturity
-            ) / (
-                volatility * sqrt(time_to_maturity)
-            )
-        d2 = d1 - volatility * sqrt(time_to_maturity)
+        # Precompute reusable terms
+        sqrtT = sqrt(T)
+        vt = σ * sqrtT
+        logSK = log(S / K)
+        drift = (r + 0.5 * σ ** 2) * T
+        d1 = (logSK + drift) / vt
+        d2 = d1 - vt
+        Nd1 = norm.cdf(d1)
+        Nd2 = norm.cdf(d2)
+        pdf_d1 = norm.pdf(d1)
+        df = exp(-r * T)
 
-        call_price = current_price * norm.cdf(d1) - (
-            strike * exp(-(interest_rate * time_to_maturity)) * norm.cdf(d2)
-        )
-        put_price = (
-            strike * exp(-(interest_rate * time_to_maturity)) * norm.cdf(-d2)
-        ) - current_price * norm.cdf(-d1)
+        # Option prices
+        self.call_price = S * Nd1 - K * df * Nd2
+        self.put_price  = K * df * (1 - Nd2) - S * (1 - Nd1)
 
-        self.call_price = call_price
-        self.put_price = put_price
-
-        # GREEKS
-        # Delta
-        self.call_delta = norm.cdf(d1)
-        self.put_delta = 1 - norm.cdf(d1)
-
-        # Gamma
-        self.call_gamma = norm.pdf(d1) / (
-            strike * volatility * sqrt(time_to_maturity)
-        )
-        self.put_gamma = self.call_gamma
+        # Greeks
+        self.call_delta = Nd1
+        self.put_delta  = Nd1 - 1
+        gamma = pdf_d1 / (S * σ * sqrtT)
+        self.call_gamma = gamma
+        self.put_gamma  = gamma
 
 
 if __name__ == "__main__":
-    time_to_maturity = 2
-    strike = 90
-    current_price = 100
-    volatility = 0.2
-    interest_rate = 0.05
-
-    # Black Scholes
     BS = BlackScholes(
-        time_to_maturity=time_to_maturity,
-        strike=strike,
-        current_price=current_price,
-        volatility=volatility,
-        interest_rate=interest_rate)
+        time_to_maturity=2,
+        strike=90,
+        current_price=100,
+        volatility=0.2,
+        interest_rate=0.05
+    )
     BS.run()
+    print(f"Call Price: {BS.call_price:.4f}, Put Price: {BS.put_price:.4f}")
+    print(f"Call Delta: {BS.call_delta:.4f}, Put Delta: {BS.put_delta:.4f}")
+    print(f"Gamma: {BS.call_gamma:.4f}")
