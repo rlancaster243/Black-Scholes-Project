@@ -20,4 +20,4 @@ This repository hosts an interactive Black–Scholes pricing dashboard, letting 
 
 - **`yfinance`** – fetches up-to-date asset prices  
 - **`numpy`** – powers the numerical calculations  
-- **`matplotlib`** – generates the heatmap visualizations  
+- **`Plotly`** – generates the heatmap visualizations  
