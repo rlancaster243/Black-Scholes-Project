@@ -1,0 +1,9 @@
+[theme]
+primaryColor = "#1ABC9C"              # Fresh teal accent
+backgroundColor = "#2C3E50"           # Deep slate for the main background
+secondaryBackgroundColor = "#34495E"  # Slightly lighter slate for panels
+textColor = "#ECF0F1"                 # Soft off-white for high contrast
+font = "serif"                        # Switch to a serif font for a classic look
+
+[server]
+enableStaticServing = true
